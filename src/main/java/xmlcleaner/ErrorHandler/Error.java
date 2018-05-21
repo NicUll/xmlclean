@@ -1,20 +1,18 @@
-package xmlcleaner;
+package xmlcleaner.ErrorHandler;
 
-import xmlcleaner.xml.XMLRelation;
-
-public class RelationError {
-    private XMLRelation relation;
+public class Error {
+    private String relation;
     private String type;
     private String description;
 
 
-    public RelationError(XMLRelation relation, String type, String description){
+    public Error(String relation, String type, String description){
         this.relation = relation;
         this.type = type;
         this.description = description;
     }
 
-    public XMLRelation getRelation(){
+    public String getRelation(){
         return this.relation;
     }
 

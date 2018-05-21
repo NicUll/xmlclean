@@ -2,6 +2,8 @@ package xmlcleaner;
 
 import logger.LOGTYPE;
 import logger.Logger;
+import xmlcleaner.ErrorHandler.ErrorContainer;
+import xmlcleaner.ErrorHandler.Error;
 import xmlcleaner.xml.XMLModel;
 import xmlcleaner.xml.XMLRelation;
 
@@ -35,8 +37,8 @@ public class ModelHandler {
         for (String item : this.loneRelations) {
             System.out.printf("Look at: %s\n", item);
         }
-        for(RelationError error : errorContainer.getAllErrors()){
-            System.out.println(error.getType() + ": " + error.getRelation().getName());
+        for(Error error : errorContainer.getAllErrors()){
+            System.out.println(error.getType() + ": " + error.getRelation());
 
         }
         System.out.println(errorContainer.getAllErrors());
@@ -77,11 +79,15 @@ public class ModelHandler {
         XMLRelation currentTargetRelation;
         String returnString = "NO_RELATION_FOUND";
 
+        String originModelName = originRelation.getParent().getName();
+        String originRelationName = originRelation.getName();
+        String targetModelName;
+
         /************************************/
         //Check for null-vale in relation-fields
         if (originRelation.hasNull()) {
             this.relationLogger.addEntry(LOGTYPE.APPLICATION, String.format("%s has missing field values.\n", originRelation.getName()));
-            this.errorContainer.addError(originRelation, "MissingValue", "Is missing one or more required values.");
+            this.errorContainer.addError(originModelName + "." + originRelationName, "MissingValue", "Is missing one or more required values.");
             return returnString;
         }
 
@@ -91,9 +97,10 @@ public class ModelHandler {
         targetModel = self_referencing ?
                 this.modelContainer.models.get(originRelation.getForeignModel()) :
                 this.modelContainer.models.get(originRelation.getModel());
+        targetModelName = targetModel.getName();
         if (targetModel == null) {
-            this.errorContainer.addError(originRelation, "NoTargetModel", "The model does not exsist.");
             this.relationLogger.addEntry(LOGTYPE.APPLICATION, String.format("%s.%s is pointing to a nonexistent model.", originRelation.getParent().getName(), originRelation.getName()));
+            this.errorContainer.addError(originModelName + "." + originRelationName + "." + targetModelName, "NoTargetModel", "The model does not exsist.");
             return returnString;
         }
 
@@ -101,7 +108,7 @@ public class ModelHandler {
         //Does targetmodel even have relations?
         if (!targetModel.hasRelations()) {
             this.relationLogger.addEntry(LOGTYPE.APPLICATION, String.format("%s has no relations", targetModel.getName()));
-            this.errorContainer.addError(originRelation, "TargetModelNoRelation", "The supposed corresponding model has no relations.");
+            this.errorContainer.addError(originModelName + "." + originRelationName + "." + targetModelName, "TargetModelNoRelation", "The supposed corresponding model has no relations.");
             return returnString;
         }
 
@@ -111,10 +118,10 @@ public class ModelHandler {
             currentTargetRelation = targetModel.getRelation(targetRelationName);
 
             if (targetModel.getName().equals(originRelation.getParent().getName()) && originRelation.correspondsTo(currentTargetRelation)) {
-                return targetModel.getName() + "." + currentTargetRelation.getName();
+                return targetModelName + "." + currentTargetRelation.getName();
             }
         }
-        this.errorContainer.addError(originRelation, "LoneRelation", "Has no corresponding");
+        this.errorContainer.addError(originModelName + "." + originRelationName, "LoneRelation", "Has no corresponding");
         this.relationLogger.addEntry(LOGTYPE.APPLICATION, String.format("%s.%s has no corresponding in %s",
                 originRelation.getParent().getName(), originRelation.getName(), targetModel.getName()));
 
