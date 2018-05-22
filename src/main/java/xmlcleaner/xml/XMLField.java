@@ -10,7 +10,7 @@ public class XMLField implements XMLEntry{
     private XMLModel parent;
     private String nameSpace;
     private String owner;
-    private static String type = "XMLField";
+    public static String entryType = "XMLField";
 
 
 
@@ -47,9 +47,10 @@ public class XMLField implements XMLEntry{
     }
 
     @Override
-    public String getType() {
-        return type;
+    public String getEntryType(){
+        return entryType;
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -86,5 +87,7 @@ public class XMLField implements XMLEntry{
     public void setFieldType(String fieldType) {
         this.fieldType = fieldType;
     }
+
+
 }
 

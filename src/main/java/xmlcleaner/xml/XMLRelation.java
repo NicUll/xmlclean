@@ -10,8 +10,8 @@ public class XMLRelation implements XMLEntry{
     private String foreignField;
     private boolean remove;
     private boolean reset;
+    public static String entryType = "XMLRelation";
 
-    private static String type = "XMLRelation";
     private XMLModel parent;
 
 
@@ -54,8 +54,8 @@ public class XMLRelation implements XMLEntry{
     }
 
     @Override
-    public String getType() {
-        return type;
+    public String getEntryType(){
+        return entryType;
     }
 
     public void setName(String name) {
@@ -118,9 +118,6 @@ public class XMLRelation implements XMLEntry{
         this.reset = reset;
     }
 
-    public static void setType(String type) {
-        XMLRelation.type = type;
-    }
 
     public String getValues(){
         return String.format("Model=%s, ForeignModel=%s, Field=%s, ForeignField=%s",this.model,this.foreignModel,this.field,this.foreignField);

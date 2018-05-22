@@ -23,7 +23,7 @@ public class Cleaner {
 
         modelContainer.setLogLevel(Logger.LOGLEVEL.ON);
         try{
-            modelHandler.iterateRelations();
+            modelHandler.iterateModels();
         }catch(NullPointerException e){
             e.printStackTrace();
         }
