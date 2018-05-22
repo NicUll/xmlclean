@@ -88,6 +88,15 @@ public class XMLField implements XMLEntry{
         this.fieldType = fieldType;
     }
 
+    public boolean hasNull(){
+        return
+                this.name.equals(null)
+                || this.column.equals(null)
+                || this.required.equals(null)
+                || this.size.equals(null)
+                || this.fieldType.equals(null);
+    }
+
 
 }
 

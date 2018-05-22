@@ -11,6 +11,7 @@ public class Cleaner {
 
     public static void main(String[] args){
         ModelContainer modelContainer = new ModelContainer();
+        modelContainer.setUris("xmlns", "http://abalon.se/modelDefinition/1.1");
         ModelHandler modelHandler = new ModelHandler(modelContainer);
 
         modelContainer.setLogLevel(Logger.LOGLEVEL.NONE);

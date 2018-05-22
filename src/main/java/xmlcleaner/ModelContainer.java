@@ -23,12 +23,17 @@ public class ModelContainer {
 
     public LinkedList<String> nameList = new LinkedList<>();
 
+    private Map uris = new HashMap();
+
 
 
     public ModelContainer(){
         Logger.setLogLevel(Logger.LOGLEVEL.NONE);
     }
 
+    public void setUris(String uriKey, String uriValue){
+        this.uris.put(uriKey, uriValue);
+    }
 
     public XMLModel getModel(String name){
         return models.get(name);
@@ -81,77 +86,57 @@ public class ModelContainer {
     }
 
 
+    private XPath createAndHandleXPath(Document document, String xpathExpression){
+        XPath returnXPath = document.createXPath(xpathExpression);
+        returnXPath.setNamespaceURIs(this.uris);
+        return returnXPath;
+    }
+
     public XMLModel LoadXMLFile(String filename) {
 
         XMLModel model;
-        //Logger XMLLoaderLogger = this.addLogger("xmlLoader_"+filename);
+        File inputFile = new File(filename);
+        SAXReader reader = new SAXReader();
+
         try {
-
-
-
-            File inputFile = new File(filename);
-            SAXReader reader = new SAXReader();
             Document document = reader.read(inputFile);
-            Element root = document.getRootElement();
-            Map uris = new HashMap();
             XPath xpath;
             List<Node> nodes;
-            String result;
 
-            uris.put("xmlns", "http://abalon.se/modelDefinition/1.1");
 
             //Create model
-            xpath = document.createXPath("/xmlns:modelDefinitions/xmlns:model");
-            xpath.setNamespaceURIs(uris);
+            xpath = createAndHandleXPath(document, "/xmlns:modelDefinitions/xmlns:model");
             Node modelnode = xpath.selectSingleNode(document);
             model = new XMLModel(modelnode.valueOf("@name"));
 
-
-
             //Get fields
-            xpath = document.createXPath("/xmlns:modelDefinitions/xmlns:model/xmlns:field");
-
-            xpath.setNamespaceURIs(uris);
+            xpath = createAndHandleXPath(document, "/xmlns:modelDefinitions/xmlns:model/xmlns:field");
             nodes = xpath.selectNodes(document);
             for (Node node : nodes) {
-
-                result = String.format("Type: %s, Name: %s, Column: %s, Required: %s, Size: %s, Fieldtype: %s",
-                        node.getName(),node.valueOf("@name"), node.valueOf("@column"), node.valueOf("@required"),
-                        node.valueOf("@size"), node.valueOf("@fieldType"));
-               // XMLLoaderLogger.addEntry(LOGTYPE.INFO, result);
-                model.insertField(new XMLField(model, node.valueOf("@name"), node.valueOf("@column"),
+                model.insertXMLEntry(new XMLField(model, node.valueOf("@name"), node.valueOf("@column"),
                         node.valueOf("@required"), node.valueOf("@size"), node.valueOf("@fieldType")));
-
-
-
             }
-
 
             //Get relations
-            xpath = document.createXPath("/xmlns:modelDefinitions/xmlns:model/xmlns:relation");
-            xpath.setNamespaceURIs(uris);
+            xpath = createAndHandleXPath(document, "/xmlns:modelDefinitions/xmlns:model/xmlns:relation");
             nodes = xpath.selectNodes(document);
             for (Node node : nodes) {
-                result = String.format("Type: %s, Name: %s, Model: %s, ForeignModel: %s, Cardinality: %s, Field: %s, ForeignField: %s",
-                        node.getName(),node.valueOf("@name"), node.valueOf("@model"), node.valueOf("@foreignModel"),
-                        node.valueOf("@cardinality"), node.valueOf("@field"), node.valueOf("@foreignField"));
-                //XMLLoaderLogger.addEntry(LOGTYPE.INFO, result);
-                model.insertRelation(new XMLRelation(model, node.valueOf("@name"), node.valueOf("@model"), node.valueOf("@foreignModel"),
+                model.insertXMLEntry(new XMLRelation(model, node.valueOf("@name"), node.valueOf("@model"), node.valueOf("@foreignModel"),
                         node.valueOf("@cardinality"), node.valueOf("@field"), node.valueOf("@foreignField")));
-
-
-
             }
 
-            return model;
         } catch (DocumentException e) {
             e.printStackTrace();
 
-            return new XMLModel("");
+            model = new XMLModel("");
+
         }
+        return model;
 
 
     }
+
+
 
 
 

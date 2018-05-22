@@ -3,7 +3,6 @@ package xmlcleaner.xml;
 public class GenXMLEntry implements XMLEntry {
     private XMLModel parent;
     private String name;
-    private String type;
     private String nameSpace;
     private String owner;
 
@@ -30,7 +29,8 @@ public class GenXMLEntry implements XMLEntry {
     }
 
     @Override
-    public String getType() {
+    public String getEntryType() {
         return null;
     }
+
 }

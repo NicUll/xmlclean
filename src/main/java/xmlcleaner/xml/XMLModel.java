@@ -33,8 +33,9 @@ public class XMLModel {
         this.entryMaps.put(XMLField.entryType, fieldMap);
         this.entryMaps.put(XMLRelation.entryType, relationMap);
 
-        this.nameLists.put(XMLField.entryType, relationNameList);
-        this.nameLists.put(XMLRelation.entryType, fieldNameList);
+        this.nameLists.put(XMLField.entryType, fieldNameList);
+        this.nameLists.put(XMLRelation.entryType, relationNameList);
+
     }
 
 
@@ -51,29 +52,23 @@ public class XMLModel {
         this.primaryKey = primaryKey;
     }
 
-    public void insertXMLEntry(XMLEntry entry, HashMap entryMap) {
-        if (entryMap.containsValue(entry)) {
-            logger.addEntry(LOGTYPE.WARNING, String.format("Duplicate field: %s", entry.getName()));
-        }
+    public void insertXMLEntry(XMLEntry entry) {
         String currentEntryType = entry.getEntryType();
-        entryMaps.get(currentEntryType).put(entry.getName(), entry); //Store entry in appropriate map depending on if field or relation
-        nameLists.get(currentEntryType).add(entry.getName());
-    }
+        String entryName = entry.getName();
+        if (entryMaps.get(currentEntryType).containsValue(entry)) {
+            logger.addEntry(LOGTYPE.WARNING, String.format("Duplicate field: %s", entryName));
 
-    public void insertField(XMLField inField) {
-        this.insertXMLEntry(inField, fieldMap);
-        String fieldName = inField.getName();
-        this.fieldMap.put(fieldName, inField);
-        this.fieldNameList.add(fieldName);
+        }
+        entryMaps.get(currentEntryType).put(entryName, entry); //Store entry in appropriate map depending on if field or relation
+        nameLists.get(currentEntryType).add(entryName);
 
     }
 
-    public void insertRelation(XMLRelation inRelation) {
-        this.insertXMLEntry(inRelation, relationMap);
-        String relationName = inRelation.getName();
-        this.relationMap.put(relationName, inRelation);
-        this.relationNameList.add(relationName);
+
+    public XMLEntry getEntry(String entryType, String key){
+        return (XMLEntry) this.entryMaps.get(entryType).get(key);
     }
+
 
 
     public XMLField getField(String key) {
