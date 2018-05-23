@@ -4,6 +4,10 @@ package xmlcleaner;
 import logger.Logger;
 import logger.LOGTYPE;
 
+import static logger.LOGTYPE.ERROR;
+import static logger.LOGTYPE.INFO;
+import static logger.LOGTYPE.WARNING;
+
 
 public class Cleaner {
 
@@ -14,15 +18,18 @@ public class Cleaner {
         modelContainer.setUris("xmlns", "http://abalon.se/modelDefinition/1.1");
         ModelHandler modelHandler = new ModelHandler(modelContainer);
 
-        modelContainer.setLogLevel(Logger.LOGLEVEL.NONE);
+        //Logger.setLogLevelByType(new LOGTYPE[]{WARNING, ERROR});
+        Logger.setLogLevel(Logger.LOGLEVEL.NONE);
+
         Logger mainLogger = modelContainer.addLogger("mainLogger");
 
-        mainLogger.addEntry(LOGTYPE.INFO, "Created model");
-        mainLogger.addEntry(LOGTYPE.INFO, "Created mainlogger");
+        mainLogger.addEntry(INFO, "Created model");
+        mainLogger.addEntry(INFO, "Created mainlogger");
 
         modelContainer.loadXMLFolder("C:\\Users\\null\\IdeaProjects\\xmlclean\\src\\main\\resources\\core\\");
 
-        modelContainer.setLogLevel(Logger.LOGLEVEL.ON);
+
+
         try{
             modelHandler.iterateModels();
         }catch(NullPointerException e){

@@ -1,5 +1,6 @@
 package logger;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -16,6 +17,7 @@ public class Logger {
 
 
     private static LOGLEVEL logLevel = LOGLEVEL.ON;
+    private static LOGTYPE[] logTypes;
 
 
     public int[] entryTypeAmount = new int[LOGTYPE.values().length];
@@ -33,28 +35,36 @@ public class Logger {
         logLevel = level;
     }
 
+    public static void setLogLevelByType(LOGTYPE[] types) {
+        logLevel = null;
+        logTypes = types.clone();
+    }
+
     public static LOGLEVEL getLogLevel() {
         return logLevel;
     }
 
     public void addEntry(Logentry entry) {
-
-        if (logLevel != LOGLEVEL.NONE) {
+        if (logLevel == null) {
+            if(Arrays.asList(logTypes).contains(entry.getType())){
+                insertEntry(entry);
+            }
+        } else if (logLevel != LOGLEVEL.NONE) {
             if (logLevel == LOGLEVEL.ON || entry.getType().name() == logLevel.name()) {
-                entryList.add(entry);
-                this.entries += 1;
-                this.hasEntry = true;
-
-                this.entryTypeAmount[entry.getType().ordinal()] += 1;
+                insertEntry(entry);
             }
         }
     }
 
+    private void insertEntry(Logentry entry){
+        entryList.add(entry);
+        this.entries += 1;
+        this.hasEntry = true;
+        this.entryTypeAmount[entry.getType().ordinal()] += 1;
+    }
+
     public void addEntry(LOGTYPE type, String value) {
-
         this.addEntry(new Logentry(this.entries + 1, type, value));
-
-
     }
 
     public LinkedList getEntries() {

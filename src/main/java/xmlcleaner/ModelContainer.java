@@ -45,9 +45,13 @@ public class ModelContainer {
         return newLogger;
     }
 
+
+
     public void setLogLevel(Logger.LOGLEVEL level){
         Logger.setLogLevel(level);
     }
+
+
 
     public String getAllLogs(){
         String logString = "";
@@ -58,8 +62,11 @@ public class ModelContainer {
     }
 
     public void printAllLogs(){
+        if (Logger.getLogLevel() == Logger.LOGLEVEL.NONE){
+            return;
+        }
         for(Logger logger: loggers.values()){
-            System.out.println(logger.name + ":\n" + logger.getErrorsAsString() + "\n\n");
+            System.out.println("\n\t\t" + logger.name + ":\n" + logger.getErrorsAsString() + "\n\n");
         }
     }
 

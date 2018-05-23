@@ -23,11 +23,11 @@ public class ErrorContainer {
         return returnList;
     }
 
-    public void addError(String relation, String type, String description){
+    public void addError(String entry, String type, String description){
         if(!errors.containsKey(type)){
             errors.put(type, new LinkedList<Error>());
         }
-        errors.get(type).add(new Error(relation, type, description));
+        errors.get(type).add(new Error(entry, type, description));
     }
 
 
